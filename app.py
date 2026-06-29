@@ -28,6 +28,7 @@ def translate(text, source, target):
 
     filename = "translation.mp3"
 
+    # Remove old audio if it exists
     if os.path.exists(filename):
         os.remove(filename)
 
@@ -51,7 +52,10 @@ def swap(source, target):
     return target, source
 
 
-with gr.Blocks(theme=gr.themes.Soft()) as app:
+with gr.Blocks(
+    theme=gr.themes.Soft(),
+    title="LAD-AI"
+) as app:
 
     gr.Markdown("""
 # 🌍 LAD-AI
@@ -79,9 +83,9 @@ with gr.Blocks(theme=gr.themes.Soft()) as app:
         clear_btn = gr.Button("🗑 Clear")
 
     input_text = gr.Textbox(
-        label="Input Text",
         lines=8,
-        placeholder="Type something..."
+        label="Input Text",
+        placeholder="Type text here..."
     )
 
     translate_btn = gr.Button(
@@ -90,8 +94,8 @@ with gr.Blocks(theme=gr.themes.Soft()) as app:
     )
 
     output = gr.Textbox(
-        label="Translation",
         lines=8,
+        label="Translation",
         show_copy_button=True
     )
 
@@ -118,4 +122,5 @@ with gr.Blocks(theme=gr.themes.Soft()) as app:
     )
 
 
-app.launch()
+if __name__ == "__main__":
+    app.launch()
