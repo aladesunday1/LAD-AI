@@ -1,5 +1,2 @@
 gradio
 deep-translator
-beautifulsoup4
-requests
-lxml
