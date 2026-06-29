@@ -16,6 +16,7 @@ languages = {
     "Chinese": "zh-CN"
 }
 
+
 def translate(text, source, target):
     if not text.strip():
         return "", None
@@ -25,23 +26,30 @@ def translate(text, source, target):
         target=languages[target]
     ).translate(text)
 
+    filename = "translation.mp3"
+
+    if os.path.exists(filename):
+        os.remove(filename)
+
     tts = gTTS(
         text=translated,
         lang=languages[target]
     )
 
-    filename = "translation.mp3"
     tts.save(filename)
 
     return translated, filename
 
+
 def clear():
     return "", "", None
+
 
 def swap(source, target):
     if source == "Auto Detect":
         source = "English"
     return target, source
+
 
 with gr.Blocks(theme=gr.themes.Soft()) as app:
 
@@ -71,8 +79,9 @@ with gr.Blocks(theme=gr.themes.Soft()) as app:
         clear_btn = gr.Button("🗑 Clear")
 
     input_text = gr.Textbox(
+        label="Input Text",
         lines=8,
-        label="Input Text"
+        placeholder="Type something..."
     )
 
     translate_btn = gr.Button(
@@ -81,31 +90,32 @@ with gr.Blocks(theme=gr.themes.Soft()) as app:
     )
 
     output = gr.Textbox(
-        lines=8,
         label="Translation",
+        lines=8,
         show_copy_button=True
     )
 
     audio = gr.Audio(
         label="🔊 Listen",
-        autoplay=False
+        type="filepath"
     )
 
     translate_btn.click(
-        translate,
-        [input_text, source, target],
-        [output, audio]
+        fn=translate,
+        inputs=[input_text, source, target],
+        outputs=[output, audio]
     )
 
     clear_btn.click(
-        clear,
+        fn=clear,
         outputs=[input_text, output, audio]
     )
 
     swap_btn.click(
-        swap,
-        [source, target],
-        [source, target]
+        fn=swap,
+        inputs=[source, target],
+        outputs=[source, target]
     )
+
 
 app.launch()

@@ -1,3 +1,5 @@
 gradio
 deep-translator
 gtts
+SpeechRecognition
+pydub
