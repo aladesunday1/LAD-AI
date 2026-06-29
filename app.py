@@ -54,7 +54,8 @@ def swap(source, target):
 
 with gr.Blocks(
     theme=gr.themes.Soft(),
-    title="LAD-AI"
+    title="LAD-AI",
+    css_paths="assets/styles.css"
 ) as app:
 
     gr.Markdown("""
