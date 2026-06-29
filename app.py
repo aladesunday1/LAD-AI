@@ -1,10 +1,6 @@
 import gradio as gr
 from deep_translator import GoogleTranslator
 
-# -----------------------
-# Languages
-# -----------------------
-
 languages = {
     "English": "en",
     "French": "fr",
@@ -17,66 +13,63 @@ languages = {
     "Chinese": "zh-CN"
 }
 
-# -----------------------
-# Translator
-# -----------------------
-
 def translate(text, source, target):
-    if not text.strip():
+    if text.strip() == "":
         return ""
 
-    translated = GoogleTranslator(
+    return GoogleTranslator(
         source=languages[source],
         target=languages[target]
     ).translate(text)
 
-    return translated
-
-# -----------------------
-# UI
-# -----------------------
-
-with gr.Blocks(title="LAD-AI") as app:
+with gr.Blocks(
+    title="LAD-AI",
+    theme=gr.themes.Soft(primary_hue="blue")
+) as app:
 
     gr.Markdown(
-        """
-        # 🌍 LAD-AI
+    """
+    # 🌍 LAD-AI
 
-        ## Language Acquisition Device
+    ### Language Acquisition Device
 
-        Translate • Learn • Speak • Understand
-        """
+    #### Breaking Language Barriers with Artificial Intelligence
+    """
     )
 
     with gr.Row():
 
         source = gr.Dropdown(
-            list(languages.keys()),
+            choices=list(languages.keys()),
             value="English",
-            label="From"
+            label="Source Language"
         )
 
         target = gr.Dropdown(
-            list(languages.keys()),
+            choices=list(languages.keys()),
             value="French",
-            label="To"
+            label="Target Language"
         )
 
-    text = gr.Textbox(
+    input_text = gr.Textbox(
+        label="Enter Text",
         lines=8,
-        placeholder="Type here..."
+        placeholder="Type your sentence here..."
+    )
+
+    translate_btn = gr.Button(
+        "🚀 Translate",
+        variant="primary"
     )
 
     output = gr.Textbox(
-        lines=8,
-        label="Translation"
+        label="Translation",
+        lines=8
     )
 
-    button = gr.Button("🚀 Translate")
-
-    button.click(
+    translate_btn.click(
         translate,
-        inputs=[text, source, target],
+        inputs=[input_text, source, target],
         outputs=output
     )
 
