@@ -1,3 +1,14 @@
+---
+title: LAD AI
+emoji: 🌍
+colorFrom: purple
+colorTo: blue
+sdk: gradio
+sdk_version: "5.34.2"
+app_file: app.py
+pinned: false
+---
+
 # 🌍 LAD-AI
 
 ## Language Acquisition Device
