@@ -2,6 +2,7 @@ import gradio as gr
 from deep_translator import GoogleTranslator
 
 languages = {
+    "Auto Detect": "auto",
     "English": "en",
     "French": "fr",
     "Spanish": "es",
@@ -14,47 +15,59 @@ languages = {
 }
 
 def translate(text, source, target):
-    if text.strip() == "":
+    if not text.strip():
         return ""
 
-    return GoogleTranslator(
-        source=languages[source],
-        target=languages[target]
-    ).translate(text)
+    try:
+        return GoogleTranslator(
+            source=languages[source],
+            target=languages[target]
+        ).translate(text)
+    except Exception as e:
+        return f"Error: {e}"
+
+def clear():
+    return "", ""
+
+def swap(source, target):
+    if source == "Auto Detect":
+        source = "English"
+    return target, source
 
 with gr.Blocks(
     title="LAD-AI",
     theme=gr.themes.Soft(primary_hue="blue")
 ) as app:
 
-    gr.Markdown(
-    """
-    # 🌍 LAD-AI
+    gr.Markdown("""
+# 🌍 LAD-AI
 
-    ### Language Acquisition Device
+### Language Acquisition Device
 
-    #### Breaking Language Barriers with Artificial Intelligence
-    """
-    )
+#### Breaking Language Barriers with Artificial Intelligence
+""")
 
     with gr.Row():
-
         source = gr.Dropdown(
-            choices=list(languages.keys()),
-            value="English",
-            label="Source Language"
+            list(languages.keys()),
+            value="Auto Detect",
+            label="From"
         )
 
         target = gr.Dropdown(
-            choices=list(languages.keys()),
+            list(languages.keys()),
             value="French",
-            label="Target Language"
+            label="To"
         )
 
+    with gr.Row():
+        swap_btn = gr.Button("🔄 Swap")
+        clear_btn = gr.Button("🗑 Clear")
+
     input_text = gr.Textbox(
-        label="Enter Text",
+        label="Input",
         lines=8,
-        placeholder="Type your sentence here..."
+        placeholder="Type here..."
     )
 
     translate_btn = gr.Button(
@@ -64,13 +77,25 @@ with gr.Blocks(
 
     output = gr.Textbox(
         label="Translation",
-        lines=8
+        lines=8,
+        show_copy_button=True
     )
 
     translate_btn.click(
         translate,
-        inputs=[input_text, source, target],
-        outputs=output
+        [input_text, source, target],
+        output
+    )
+
+    clear_btn.click(
+        clear,
+        outputs=[input_text, output]
+    )
+
+    swap_btn.click(
+        swap,
+        [source, target],
+        [source, target]
     )
 
 app.launch()
