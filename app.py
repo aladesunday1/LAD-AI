@@ -1,5 +1,7 @@
 import gradio as gr
 from deep_translator import GoogleTranslator
+from gtts import gTTS
+import os
 
 languages = {
     "Auto Detect": "auto",
@@ -16,46 +18,50 @@ languages = {
 
 def translate(text, source, target):
     if not text.strip():
-        return ""
+        return "", None
 
-    try:
-        return GoogleTranslator(
-            source=languages[source],
-            target=languages[target]
-        ).translate(text)
-    except Exception as e:
-        return f"Error: {e}"
+    translated = GoogleTranslator(
+        source=languages[source],
+        target=languages[target]
+    ).translate(text)
+
+    tts = gTTS(
+        text=translated,
+        lang=languages[target]
+    )
+
+    filename = "translation.mp3"
+    tts.save(filename)
+
+    return translated, filename
 
 def clear():
-    return "", ""
+    return "", "", None
 
 def swap(source, target):
     if source == "Auto Detect":
         source = "English"
     return target, source
 
-with gr.Blocks(
-    title="LAD-AI",
-    theme=gr.themes.Soft(primary_hue="blue")
-) as app:
+with gr.Blocks(theme=gr.themes.Soft()) as app:
 
     gr.Markdown("""
 # 🌍 LAD-AI
 
-### Language Acquisition Device
+## Language Acquisition Device
 
-#### Breaking Language Barriers with Artificial Intelligence
+### AI Translation • Voice • Learning
 """)
 
     with gr.Row():
         source = gr.Dropdown(
-            list(languages.keys()),
+            choices=list(languages.keys()),
             value="Auto Detect",
             label="From"
         )
 
         target = gr.Dropdown(
-            list(languages.keys()),
+            choices=list(languages.keys()),
             value="French",
             label="To"
         )
@@ -65,9 +71,8 @@ with gr.Blocks(
         clear_btn = gr.Button("🗑 Clear")
 
     input_text = gr.Textbox(
-        label="Input",
         lines=8,
-        placeholder="Type here..."
+        label="Input Text"
     )
 
     translate_btn = gr.Button(
@@ -76,20 +81,25 @@ with gr.Blocks(
     )
 
     output = gr.Textbox(
-        label="Translation",
         lines=8,
+        label="Translation",
         show_copy_button=True
+    )
+
+    audio = gr.Audio(
+        label="🔊 Listen",
+        autoplay=False
     )
 
     translate_btn.click(
         translate,
         [input_text, source, target],
-        output
+        [output, audio]
     )
 
     clear_btn.click(
         clear,
-        outputs=[input_text, output]
+        outputs=[input_text, output, audio]
     )
 
     swap_btn.click(
